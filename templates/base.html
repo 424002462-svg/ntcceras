@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CERAS National Teachers College</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-slate-50 flex flex-col min-h-screen">
+
+  <!-- White Top Bar Header -->
+  <header class="brand-header">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="brand-logo-container">
+        <img src="{{ url_for('static', filename='logo.png') }}" 
+             alt="National Teachers College Official Seal" 
+             class="brand-logo">
+        <div>
+          <div class="school-name">National Teachers College</div>
+          <h1 class="system-title-main">CERAS</h1>
+          <p class="system-title-sub">Campus Event Registration and Attendance System</p>
+        </div>
+      </div>
+      
+      {% if session.user %}
+      <div class="text-right">
+        {% if session.role == 'student' %}
+        <span class="text-xs uppercase font-semibold text-slate-400 block">Logged in as</span>
+        <span class="text-sm font-bold text-[#0B1B6D]">Student: {{ session.name }}</span>
+        {% else %}
+        <span class="text-xs uppercase font-semibold text-slate-400 block">Logged in as</span>
+        <span class="text-sm font-bold text-[#0B1B6D]">Admin: {{ session.name }}</span>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="text-xs font-semibold text-red-600 hover:text-red-800 ml-2 border-l pl-2 border-slate-300">Sign Out</a>
+      </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto w-full px-6 mt-6">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="p-4 mb-4 text-sm rounded-xl font-medium shadow-sm {% if category == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% elif category == 'danger' %}bg-rose-50 text-rose-800 border border-rose-200{% elif category == 'warning' %}bg-amber-50 text-amber-800 border border-amber-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-4">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-[#061043] text-slate-300 text-center py-5 text-xs border-t-4 border-[#E1A613] mt-12 shadow-inner">
+    &copy; 2026 National Teachers College — Campus Event Registration and Attendance System (CERAS)
+  </footer>
+
+</body>
+</html>

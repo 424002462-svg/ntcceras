@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+  <div>
+    <h2 class="text-2xl font-black text-[#0B1B6D]">CERAS Registration & Attendance Reports</h2>
+    <p class="text-xs text-slate-500 mt-0.5">National Teacher College Event Analytics</p>
+  </div>
+  <a href="{{ url_for('admin_dashboard') }}" class="text-xs text-[#0B1B6D] font-bold hover:underline">Back to Admin Hub</a>
+</div>
+
+<div class="space-y-6">
+  {% for id, evt in events.items() %}
+  <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+    <h3 class="text-base font-bold text-[#0B1B6D] border-b border-slate-100 pb-3 mb-4">{{ evt.title }} Summary</h3>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
+      <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-100"><p class="text-xs font-semibold text-slate-500">Total Capacity</p><p class="text-xl font-black text-blue-900 mt-1">{{ evt.capacity }}</p></div>
+      <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-100"><p class="text-xs font-semibold text-slate-500">Total Registered</p><p class="text-xl font-black text-emerald-900 mt-1">{{ evt.registered|length }}</p></div>
+      <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-100"><p class="text-xs font-semibold text-slate-500">Waitlisted Count</p><p class="text-xl font-black text-amber-900 mt-1">{{ evt.waiting_list|length }}</p></div>
+      <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-100">
+        <p class="text-xs font-semibold text-slate-500">Attended Count</p>
+        <p class="text-xl font-black text-indigo-900 mt-1">
+          {% set count = namespace(val=0) %}
+          {% for st, att in evt.attendance.items() %}
+            {% if att == True %}{% set count.val = count.val + 1 %}{% endif %}
+          {% endfor %}
+          {{ count.val }}
+        </p>
+      </div>
+    </div>
+
+    <div class="text-xs space-y-3 border-t border-slate-100 pt-4">
+      <p class="font-bold text-slate-800">Registered Student Verification List:</p>
+      <div class="flex flex-wrap gap-2">
+        {% for st_id in evt.registered %}
+          {% set is_present = evt.attendance.get(st_id) == True %}
+          <span class="px-3 py-1.5 rounded-lg border text-xs font-medium {% if is_present %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-slate-50 border-slate-200 text-slate-700{% endif %}">
+            {{ users[st_id].name if st_id in users else st_id }}
+            {% if is_present %} <strong class="text-emerald-700 ml-1">(✓ Checked)</strong>{% else %} <span class="text-slate-400 ml-1">(Blank)</span>{% endif %}
+          </span>
+        {% else %}
+          <span class="text-slate-400 italic">None</span>
+        {% endfor %}
+      </div>
+
+      {% if evt.waiting_list %}
+      <p class="font-bold text-slate-800 mt-4">Waitlisted Students:</p>
+      <div class="flex flex-wrap gap-2">
+        {% for st_id in evt.waiting_list %}
+          <span class="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-lg text-xs font-medium">
+            {{ users[st_id].name if st_id in users else st_id }}
+          </span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
